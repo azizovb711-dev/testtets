@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Savollar - 2 Kurs 4 Semestr</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d2e;
+    --card2: #1e2235;
+    --border: #2a2f4a;
+    --accent1: #6c63ff;
+    --accent2: #00e5ff;
+    --correct: #00c471;
+    --wrong: #ff4d6d;
+    --text: #e8eaf6;
+    --muted: #7c85b0;
+    --gold: #ffd700;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(108,99,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0,229,255,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== HOME SCREEN ===== */
+  #home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo-icon {
+    width: 90px; height: 90px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 50px rgba(108,99,255,0.4);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .home-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #fff 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .home-sub {
+    color: var(--muted);
+    font-size: 15px;
+    text-align: center;
+    margin-bottom: 48px;
+    max-width: 400px;
+    line-height: 1.6;
+  }
+
+  .section-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 500px) {
+    .section-cards { grid-template-columns: 1fr; }
+  }
+
+  .sec-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sec-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .sec-card.s1::before { background: linear-gradient(135deg, rgba(108,99,255,0.15), transparent); }
+  .sec-card.s2::before { background: linear-gradient(135deg, rgba(0,229,255,0.15), transparent); }
+
+  .sec-card:hover { transform: translateY(-4px); border-color: var(--accent1); }
+  .sec-card:hover::before { opacity: 1; }
+  .sec-card.s2:hover { border-color: var(--accent2); }
+
+  .sec-icon {
+    font-size: 36px;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .sec-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .sec-meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .sec-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+  }
+
+  .s1 .sec-btn { background: var(--accent1); }
+  .s2 .sec-btn { background: linear-gradient(90deg, #0096c7, var(--accent2)); }
+  .sec-btn:hover { transform: scale(1.05); }
+
+  /* ===== QUIZ SCREEN ===== */
+  #quiz { display: none; min-height: 100vh; position: relative; z-index: 1; }
+
+  .quiz-header {
+    background: rgba(26,29,46,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .back-btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .back-btn:hover { border-color: var(--accent1); color: var(--accent1); }
+
+  .quiz-progress-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quiz-title-sm {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transition: width 0.4s ease;
+  }
+
+  .score-badge {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .score-badge span { color: var(--gold); }
+
+  /* Question area */
+  .quiz-body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 100px;
+  }
+
+  .q-counter {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(17px, 2.5vw, 22px);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    color: #fff;
+  }
+
+  .answers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ans-btn {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    font-family: 'Noto Sans', sans-serif;
+    color: var(--text);
+    line-height: 1.45;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ans-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .ans-btn:hover:not(:disabled) { border-color: var(--accent1); transform: translateX(4px); }
+  .ans-btn:hover:not(:disabled)::before { background: rgba(108,99,255,0.08); opacity: 1; }
+
+  .ans-letter {
+    width: 34px; height: 34px;
+    min-width: 34px;
+    border-radius: 9px;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+
+  .ans-text { flex: 1; }
+
+  .ans-icon {
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  /* Correct answer */
+  .ans-btn.correct {
+    border-color: var(--correct) !important;
+    background: rgba(0,196,113,0.1) !important;
+    animation: pop 0.35s ease;
+  }
+  .ans-btn.correct .ans-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+  .ans-btn.correct .ans-icon { opacity: 1; }
+  .ans-btn.correct::before { background: rgba(0,196,113,0.05); opacity: 1; }
+
+  /* Wrong answer */
+  .ans-btn.wrong {
+    border-color: var(--wrong) !important;
+    background: rgba(255,77,109,0.1) !important;
+    animation: shake 0.4s ease;
+  }
+  .ans-btn.wrong .ans-letter {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: #fff;
+  }
+  .ans-btn.wrong .ans-icon { opacity: 1; }
+
+  /* Show correct after wrong selection */
+  .ans-btn.show-correct {
+    border-color: var(--correct) !important;
+    background: rgba(0,196,113,0.06) !important;
+  }
+  .ans-btn.show-correct .ans-letter {
+    background: rgba(0,196,113,0.3);
+    border-color: var(--correct);
+    color: var(--correct);
+  }
+
+  .ans-btn:disabled { cursor: not-allowed; transform: none !important; }
+
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  /* Feedback toast */
+  .feedback-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .feedback-toast.show { transform: translateX(-50%) translateY(0); }
+  .feedback-toast.correct-toast { background: var(--correct); color: #fff; }
+  .feedback-toast.wrong-toast { background: var(--wrong); color: #fff; }
+
+  /* Next button */
+  .next-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    background: linear-gradient(135deg, var(--accent1), #9c6fff);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 30px rgba(108,99,255,0.4);
+    transition: all 0.2s;
+    z-index: 50;
+  }
+  .next-btn:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(108,99,255,0.5); }
+  .next-btn.visible { display: flex; animation: slideUp 0.3s ease; }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* ===== RESULT SCREEN ===== */
+  #result {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    padding: 48px 40px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .result-emoji {
+    font-size: 72px;
+    margin-bottom: 20px;
+    animation: bounce 0.6s ease;
+    display: block;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    40% { transform: translateY(-20px); }
+  }
+
+  .result-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .result-score-big {
+    font-family: 'Outfit', sans-serif;
+    font-size: 64px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold), #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 12px 0;
+    line-height: 1;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0 32px;
+  }
+
+  .stat-box {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .stat-box .num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .stat-box .lbl { color: var(--muted); font-size: 13px; }
+  .stat-box.c .num { color: var(--correct); }
+  .stat-box.w .num { color: var(--wrong); }
+
+  .result-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .r-btn {
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .r-btn.primary { background: linear-gradient(135deg, var(--accent1), #9c6fff); color: #fff; }
+  .r-btn.secondary { background: var(--card2); border: 1px solid var(--border); color: var(--text); }
+  .r-btn:hover { transform: scale(1.03); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Particle on correct */
+  .particle {
+    position: fixed;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999;
+    animation: particleFly 0.6s ease forwards;
+  }
+  @keyframes particleFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="home">
+  <div class="logo-icon">📚</div>
+  <h1 class="home-title">Test Savollar</h1>
+  <p class="home-sub">2-kurs 4-semestr · Axborot texnologiyalari & Jahon Adabiyoti</p>
+
+  <div class="section-cards">
+    <div class="sec-card s1" onclick="startQuiz(0)">
+      <span class="sec-icon">💻</span>
+      <div class="sec-name">Bo'lim 1</div>
+      <div class="sec-meta">Axborot Texnologiyalari · 100 ta savol</div>
+      <button class="sec-btn">Boshlash →</button>
+    </div>
+    <div class="sec-card s2" onclick="startQuiz(1)">
+      <span class="sec-icon">📖</span>
+      <div class="sec-name">Bo'lim 2</div>
+      <div class="sec-meta">Jahon Adabiyoti · 118 ta savol</div>
+      <button class="sec-btn">Boshlash →</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="goHome()">← Orqaga</button>
+    <div class="quiz-progress-wrap">
+      <div class="quiz-title-sm" id="quizTitleSm"></div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="score-badge">✓ <span id="scoreDisp">0</span></div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="q-counter" id="qCounter"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="answers-grid" id="answersGrid"></div>
+  </div>
+
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+    Keyingisi <span id="nextLabel">→</span>
+  </button>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result">
+  <div class="result-card">
+    <span class="result-emoji" id="resultEmoji">🎉</span>
+    <div class="result-title" id="resultTitle">Ajoyib!</div>
+    <div style="color:var(--muted);font-size:14px;margin-bottom:4px;">Natijangiz</div>
+    <div class="result-score-big" id="resultScoreBig"></div>
+    <div style="color:var(--muted);font-size:14px;margin-bottom:8px;" id="resultPct"></div>
+    <div class="result-stats">
+      <div class="stat-box c">
+        <div class="num" id="rCorrect">0</div>
+        <div class="lbl">✓ To'g'ri</div>
+      </div>
+      <div class="stat-box w">
+        <div class="num" id="rWrong">0</div>
+        <div class="lbl">✗ Noto'g'ri</div>
+      </div>
+    </div>
+    <div class="result-btns">
+      <button class="r-btn primary" id="retryBtn">🔄 Qayta urinish</button>
+      <button class="r-btn secondary" onclick="goHome()">🏠 Bosh sahifa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Toast -->
+<div class="feedback-toast" id="feedbackToast"></div>
+
+<script>
+const LETTERS = ['A','B','C','D'];
+
+const DATA = {
+  section1: [{"q":"Qaysi sohalarda sun'iy intellekt tizimlari keskin rivojlandi?","answers":[{"text":"Faqat transport va logistika","correct":false},{"text":"San'at va madaniyat","correct":true},{"text":"Faqat qishloq xo'jaligi","correct":false},{"text":"Faqat sport","correct":false}],"correct":1},{"q":"Matn yaratish uchun qaysi sun'iy intellekt vositasi misol sifatida keltirilgan?","answers":[{"text":"MidJourney","correct":false},{"text":"Adobe Sensei","correct":false},{"text":"ChatGPT","correct":true},{"text":"AIVA","correct":false}],"correct":2},{"q":"Tasvir yaratish uchun qaysi ikki vosita asosan ko'rsatilgan?","answers":[{"text":"ChatGPT va AIVA","correct":false},{"text":"MidJourney va Adobe Sensei","correct":true},{"text":"Blender va Unity","correct":false},{"text":"Sonantic va Spark AR","correct":false}],"correct":1},{"q":"ChatGPT yordamida teatr spektakli uchun nima yaratish mumkin?","answers":[{"text":"3D modellar","correct":false},{"text":"Musiqa partiturasi","correct":false},{"text":"Skript va dialoglar","correct":true},{"text":"Video effektlar","correct":false}],"correct":2},{"q":"MidJourney'da tasvir yaratish uchun foydalanuvchi nima kiritishi kerak?","answers":[{"text":"Ovozli buyruq","correct":false},{"text":"Matn tavsifi (so'rov)","correct":true},{"text":"Excel jadvali","correct":false},{"text":"Barcode","correct":false}],"correct":1},{"q":"Adobe Sensei qaysi dasturlarga integratsiyalangan?","answers":[{"text":"Microsoft Word va Excel","correct":false},{"text":"Photoshop va Illustrator","correct":true},{"text":"Google Chrome va Firefox","correct":false},{"text":"AIVA va Sonantic","correct":false}],"correct":1},{"q":"AIVA qanday sohada qo'llaniladi?","answers":[{"text":"Matn yozish","correct":false},{"text":"Tasvir tahrirlash","correct":false},{"text":"Musiqa yaratish","correct":true},{"text":"3D modellashtirish","correct":false}],"correct":2},{"q":"Qaysi vosita ovoz sifatini yaxshilash uchun DeNoise va Auto-Leveling xususiyatlariga ega?","answers":[{"text":"ChatGPT","correct":false},{"text":"MidJourney","correct":false},{"text":"Adobe Audition","correct":true},{"text":"Blender","correct":false}],"correct":2},{"q":"3D modellashtirish va animatsiyada qaysi dastur sun'iy intellekt yordamida harakatni kuzatish imkonini beradi?","answers":[{"text":"Microsoft Paint","correct":false},{"text":"Adobe After Effects","correct":true},{"text":"AIVA","correct":false},{"text":"Sonantic","correct":false}],"correct":1},{"q":"Sun'iy intellekt yordamida virtual san'at galereyalari yaratish uchun qaysi platformalar ishlatiladi?","answers":[{"text":"ChatGPT va MidJourney","correct":false},{"text":"Unity yoki Unreal Engine","correct":true},{"text":"Adobe Sensei va AIVA","correct":false},{"text":"Faqat Photoshop","correct":false}],"correct":1},{"q":"San'at va madaniyatda sun'iy intellektdan foydalanishdagi asosiy axloqiy masalalardan biri qaysi?","answers":[{"text":"Internet tezligi","correct":false},{"text":"Mualliflik huquqi va egalik huquqi","correct":true},{"text":"Kompyuterning rangi","correct":false},{"text":"Elektr energiyasi sarfi","correct":false}],"correct":1},{"q":"Matnga ko'ra, sun'iy intellekt inson ijodiga qanday munosabatda bo'lishi kerak?","answers":[{"text":"Inson o'rnini to'liq bosishi kerak","correct":false},{"text":"Inson ijodkorlariga yordam beruvchi hamkor sifatida","correct":true},{"text":"Inson ijodini butunlay bekor qilishi kerak","correct":false},{"text":"Faqat matematik hisoblar uchun ishlatilishi kerak","correct":false}],"correct":1},{"q":"Qaysi vosita ovozli dizayn va belgilar ovozlarini yaratish uchun ishlatiladi?","answers":[{"text":"MidJourney","correct":false},{"text":"Sonantic","correct":true},{"text":"ChatGPT","correct":false},{"text":"Blender","correct":false}],"correct":1},{"q":"Blender'da sun'iy intellekt qanday animatsiya jarayonida yordam beradi?","answers":[{"text":"Matn yozishda","correct":false},{"text":"Protsessual animatsiya va tabiiy harakatni hisoblashda","correct":true},{"text":"Rang tanlashda","correct":false},{"text":"Ovoz yozishda","correct":false}],"correct":1},{"q":"Xulosaga ko'ra, sun'iy intellekt san'at va madaniyat sohasiga qanday ta'sir ko'rsatmoqda?","answers":[{"text":"Hech qanday ta'siri yo'q","correct":false},{"text":"Faqat muammolarni keltirib chiqarmoqda","correct":false},{"text":"An'anaviy badiiy jarayonlarni o'zgartirib, ifodaning yangi shakllarini yaratmoqda","correct":true},{"text":"Faqat rasmiy hujjatlarni tayyorlamoqda","correct":false}],"correct":2},{"q":"Kompyuter grafikasi asosan nimani o'z ichiga oladi?","answers":[{"text":"Faqat matn yozish","correct":false},{"text":"Tasvirlarni yaratish, manipulyatsiya qilish va tasvirlash","correct":true},{"text":"Musiqa yaratish","correct":false},{"text":"Faqat ma'lumotlar bazasini boshqarish","correct":false}],"correct":1},{"q":"Quyidagilardan qaysi biri kompyuter grafikasi qo'llaniladigan sohalardan emas?","answers":[{"text":"Kino va video o'yinlar","correct":false},{"text":"Arxitektura","correct":false},{"text":"Pazandachilik","correct":true},{"text":"Ilmiy vizualizatsiya","correct":false}],"correct":2},{"q":"Kompyuter grafikasi tizimlarining asosiy komponentlariga qaysi biri kiradi?","answers":[{"text":"Printer va skaner","correct":false},{"text":"Displey qurilmalari, kirish qurilmalari va dasturiy ta'minot","correct":true},{"text":"Faqat protsessor","correct":false},{"text":"Faqat klaviatura","correct":false}],"correct":1},{"q":"Kompyuter grafikasi tarixi taxminan qaysi yillardan boshlangan?","answers":[{"text":"1900-yillar","correct":false},{"text":"1950-yillar","correct":true},{"text":"2000-yillar","correct":false},{"text":"1800-yillar","correct":false}],"correct":1},{"q":"Ruxsat (resolution) kompyuter grafikasida nimani anglatadi?","answers":[{"text":"Ranglar soni","correct":false},{"text":"Tasvirni tashkil etuvchi piksellar soni","correct":true},{"text":"Fayl hajmi","correct":false},{"text":"Animatsiya tezligi","correct":false}],"correct":1},{"q":"Renderlash jarayoni nima?","answers":[{"text":"Tasvirni kichraytirish","correct":false},{"text":"Raqamli modelni yakuniy tasvir yoki animatsiyaga aylantirish","correct":true},{"text":"Matn yozish","correct":false},{"text":"Ovoz qo'shish","correct":false}],"correct":1},{"q":"Rastrli grafika (bitmap) asosan nimadan tashkil topgan?","answers":[{"text":"Matematik formulalar","correct":false},{"text":"Chiziqlar va egri chiziqlar","correct":false},{"text":"Piksellar to'ri","correct":true},{"text":"3D ko'pburchaklar","correct":false}],"correct":2},{"q":"Quyidagi formatlardan qaysi biri vektorli grafikaga misol?","answers":[{"text":"JPEG","correct":false},{"text":"PNG","correct":false},{"text":"SVG","correct":true},{"text":"BMP","correct":false}],"correct":2},{"q":"Vektorli grafikaning asosiy afzalligi nimada?","answers":[{"text":"Sifatni yo'qotmasdan istalgan o'lchamga kattalashtirish mumkin","correct":true},{"text":"Juda kichik fayl hajmi","correct":false},{"text":"Faqat fotoreal tasvirlar yaratadi","correct":false},{"text":"Ranglarni avtomatik tuzatadi","correct":false}],"correct":0},{"q":"3D grafika yaratish bosqichlariga qaysi biri kirmaydi?","answers":[{"text":"Modellashtirish","correct":false},{"text":"Teksturalash","correct":false},{"text":"Matn yozish","correct":true},{"text":"Renderlash","correct":false}],"correct":2},{"q":"Interaktiv grafika qayerda asosan qo'llaniladi?","answers":[{"text":"Faqat bosma mahsulotlarda","correct":false},{"text":"Video o'yinlar, simulyatsiyalar va foydalanuvchi interfeyslarida","correct":true},{"text":"Faqat statik plakatlarda","correct":false},{"text":"Faqat audio yozuvlarda","correct":false}],"correct":1},{"q":"Lossy (yo'qotilgan) formatlarga qaysi biri misol?","answers":[{"text":"PNG","correct":false},{"text":"BMP","correct":false},{"text":"JPEG","correct":true},{"text":"TIFF","correct":false}],"correct":2},{"q":"Qaysi grafik format shaffoflikni (alfa kanal) qo'llab-quvvatlaydi?","answers":[{"text":"JPEG","correct":false},{"text":"PNG","correct":true},{"text":"BMP","correct":false},{"text":"TIFF","correct":false}],"correct":1},{"q":"RGB rang modeli asosan qayerda ishlatiladi?","answers":[{"text":"Bosmaxona (matbaa)","correct":false},{"text":"Raqamli displeylar (monitor, televizor)","correct":true},{"text":"Qora-oq printer","correct":false},{"text":"Faqat eskiz chizish","correct":false}],"correct":1},{"q":"CMYK rang modeli asosan qayerda qo'llaniladi?","answers":[{"text":"Veb-saytlarda","correct":false},{"text":"Matbaa va bosma dizaynda","correct":true},{"text":"Video o'yinlarda","correct":false},{"text":"Mobil ilovalarda","correct":false}],"correct":1},{"q":"Adobe Photoshop asosan qaysi soha mutaxassislari tomonidan qo'llaniladi?","answers":[{"text":"Musiqachilar","correct":false},{"text":"San'atkorlar, dizaynerlar va fotosuratchilar","correct":true},{"text":"Faqat dasturchilar","correct":false},{"text":"Faqat hisobchilar","correct":false}],"correct":1},{"q":"Photoshop dasturini birinchi marta ochganda foydalanuvchini nima kutib oladi?","answers":[{"text":"To'g'ridan-to'g'ri 3D model","correct":false},{"text":"Asosiy ekran (yangilarni yaratish yoki ochish)","correct":true},{"text":"Audio fayl","correct":false},{"text":"Veb-sahifa","correct":false}],"correct":1},{"q":"Menyu panelidagi \"Tasvir\" menyusi asosan nima uchun ishlatiladi?","answers":[{"text":"Matn yozish","correct":false},{"text":"Ranglar, yorqinlik va o'lchamni sozlash","correct":true},{"text":"Qatlamlarni o'chirish","correct":false},{"text":"Chop etish","correct":false}],"correct":1},{"q":"Asboblar paneli Photoshop interfeysining qayerida joylashgan?","answers":[{"text":"Yuqori qismida","correct":false},{"text":"Chap tomonda","correct":true},{"text":"O'ng tomonda","correct":false},{"text":"Pastki qismida","correct":false}],"correct":1},{"q":"Qaysi vosita kompozitsiya ichidagi elementlarni ko'chirish imkonini beradi?","answers":[{"text":"Lasso Tool","correct":false},{"text":"Move Tool","correct":true},{"text":"Eraser Tool","correct":false},{"text":"Crop Tool","correct":false}],"correct":1},{"q":"Variantlar paneli nima vazifani bajaradi?","answers":[{"text":"Ranglarni tanlaydi","correct":false},{"text":"Joriy tanlangan vosita uchun sozlamalarni ko'rsatadi","correct":true},{"text":"Faylni saqlaydi","correct":false},{"text":"Qatlamlarni guruhlaydi","correct":false}],"correct":1},{"q":"Qatlamlar paneli Photoshop dasturida nima uchun eng muhim hisoblanadi?","answers":[{"text":"Matn yozish uchun","correct":false},{"text":"Tasvirning turli qismlarida alohida ishlash imkonini beradi","correct":true},{"text":"Ovoz qo'shish uchun","correct":false},{"text":"Chop etish uchun","correct":false}],"correct":1},{"q":"Kesish vositasidan (Crop Tool) foydalanish natijasida nima bajariladi?","answers":[{"text":"Rasm ranglari o'zgaradi","correct":false},{"text":"Rasmning keraksiz qismlari kesiladi","correct":true},{"text":"Yangi qatlam qo'shiladi","correct":false},{"text":"Matn yoziladi","correct":false}],"correct":1},{"q":"Rasmning yorqinligi va kontrastini sozlash uchun qaysi menyu yo'lidan o'tiladi?","answers":[{"text":"Fayl > Ochish","correct":false},{"text":"Tasvir > Sozlamalar > Yorqinlik/Kontrast","correct":true},{"text":"Qatlam > Yangi","correct":false},{"text":"Filtr > Blur","correct":false}],"correct":1},{"q":"Qatlam maskasi (Layer Mask) asosan nima uchun ishlatiladi?","answers":[{"text":"Qatlamni butunlay o'chirish","correct":false},{"text":"Qatlam qismlarini o'chirmasdan yashirish yoki ochish","correct":true},{"text":"Yangi qatlam qo'shish","correct":false},{"text":"Ranglarni o'zgartirish","correct":false}],"correct":1},{"q":"Qaysi retush vositasi tasvirning bir qismini nusxalab, uni boshqa sohaga qo'llaydi?","answers":[{"text":"Healing Brush Tool","correct":false},{"text":"Clone Stamp Tool","correct":true},{"text":"Patch Tool","correct":false},{"text":"Eraser Tool","correct":false}],"correct":1},{"q":"Murakkab kompozitsiyalar yaratishda bir nechta tasvirlarni birlashtirish uchun asosan nima ishlatiladi?","answers":[{"text":"Faqat Crop Tool","correct":false},{"text":"Qatlamlar, qatlam maskalari va aralashtirish rejimlari","correct":true},{"text":"Faqat matn vositasi","correct":false},{"text":"Faqat rang balansi","correct":false}],"correct":1},{"q":"Smart Ob'ektlarning asosiy afzalligi nimada?","answers":[{"text":"Fayl hajmini kichraytiradi","correct":false},{"text":"Buzilmaydigan tahrirlash imkonini beradi","correct":true},{"text":"Avtomatik rang tuzatadi","correct":false},{"text":"Faqat video uchun ishlaydi","correct":false}],"correct":1},{"q":"Ranglarni to'yinganligini (intensivligini) oshirish uchun qaysi sozlamadan foydalaniladi?","answers":[{"text":"Darajalar (Levels)","correct":false},{"text":"Hue/Saturation","correct":true},{"text":"Qora va oq","correct":false},{"text":"Kesish","correct":false}],"correct":1},{"q":"Xulosaga ko'ra, Photoshop dasturini o'zlashtirish uchun nima muhim?","answers":[{"text":"Faqat matematik bilim","correct":false},{"text":"Amaliyot va tajriba","correct":true},{"text":"Faqat apparat ta'minoti","correct":false},{"text":"Internetga doimiy ulanish","correct":false}],"correct":1},{"q":"Clipchamp asosan qanday turdagi dastur?","answers":[{"text":"3D modellashtirish dasturi","correct":false},{"text":"Matn muharriri","correct":false},{"text":"Veb-ga asoslangan video tahrirlash vositasi","correct":true},{"text":"Musiqa yaratish dasturi","correct":false}],"correct":2},{"q":"Clipchamp'dan foydalanish uchun birinchi qadam nima?","answers":[{"text":"Videoni kesish","correct":false},{"text":"Hisob qaydnomasini yaratish","correct":true},{"text":"Ranglarni sozlash","correct":false},{"text":"Musiqa yuklash","correct":false}],"correct":1},{"q":"Clipchamp qanday media formatlarini qo'llab-quvvatlaydi?","answers":[{"text":"Faqat PDF","correct":false},{"text":"MP4 (video), JPG/PNG (tasvir), MP3 (audio)","correct":true},{"text":"Faqat EXE fayllar","correct":false},{"text":"Faqat DOCX","correct":false}],"correct":1},{"q":"Media fayllarni Clipchamp'ga qanday usulda yuklash mumkin?","answers":[{"text":"Faqat kamera orqali","correct":false},{"text":"\"Mediani import qilish\" tugmasi yoki sudrab olib tashlash","correct":true},{"text":"Faqat elektron pochta orqali","correct":false},{"text":"Faqat QR kod skanerlash","correct":false}],"correct":1},{"q":"Clipchamp interfeysida vaqt jadvali (timeline) nima vazifani bajaradi?","answers":[{"text":"Audio yozish","correct":false},{"text":"Media kliplarni tartibga solish va tahrirlash joyi","correct":true},{"text":"Ranglarni tanlash","correct":false},{"text":"Matn yozish","correct":false}],"correct":1},{"q":"Ko'rib chiqish oynasi (preview window) qayerda ishlatiladi?","answers":[{"text":"Faqat eksport qilishda","correct":false},{"text":"Tahrirlash vaqtida videoni jonli ko'rish uchun","correct":true},{"text":"Faqat ovoz yozishda","correct":false},{"text":"Faqat matn qo'shishda","correct":false}],"correct":1},{"q":"Videoning keraksiz qismini olib tashlash uchun qanday vosita asosan ishlatiladi?","answers":[{"text":"Rang balansi","correct":false},{"text":"Split (ajratish) va Delete (o'chirish)","correct":true},{"text":"Tezlikni oshirish","correct":false},{"text":"Filtr qo'shish","correct":false}],"correct":1},{"q":"Kliplar orasiga professional o'tish effektlarini qo'shish uchun nima ishlatiladi?","answers":[{"text":"Rang tasnifi","correct":false},{"text":"Transitions (o'tishlar)","correct":true},{"text":"Tezlikni boshqarish","correct":false},{"text":"Rasmdagi rasm","correct":false}],"correct":1},{"q":"Qaysi xususiyat videoning umumiy kayfiyatini (masalan, vintage effekti) o'zgartirishga yordam beradi?","answers":[{"text":"Split","correct":false},{"text":"Filtrlar","correct":true},{"text":"Audio pasaytirish","correct":false},{"text":"Eksport","correct":false}],"correct":1},{"q":"Clipchamp'da matn qoplamalari (text overlays) nima uchun ishlatiladi?","answers":[{"text":"Faqat musiqa qo'shish","correct":false},{"text":"Subtitrlar, sarlavhalar yoki tavsiflar qo'shish","correct":true},{"text":"Ranglarni o'zgartirish","correct":false},{"text":"Videoni kesish","correct":false}],"correct":1},{"q":"\"Tezlikni boshqarish\" (speed control) xususiyati nima qiladi?","answers":[{"text":"Ranglarni o'zgartiradi","correct":false},{"text":"Videoni tezlashtiradi yoki sekinlashtiradi","correct":true},{"text":"Ovozni o'chiradi","correct":false},{"text":"Matn qo'shadi","correct":false}],"correct":1},{"q":"\"Rasm ichidagi rasm\" (PIP) xususiyati qanday ishlaydi?","answers":[{"text":"Ikkita videoni yonma-yon qo'yadi","correct":false},{"text":"Bir videoni ikkinchisining ustiga qo'yadi","correct":true},{"text":"Faqat rasm qo'shadi","correct":false},{"text":"Faqat matn qo'shadi","correct":false}],"correct":1},{"q":"Ranglarni tasniflash (color grading) nima uchun ishlatiladi?","answers":[{"text":"Videoning umumiy ohangini professional tarzda sozlash","correct":true},{"text":"Faqat ovozni tahrirlash","correct":false},{"text":"Faqat matn qo'shish","correct":false},{"text":"Fayl hajmini kamaytirish","correct":false}],"correct":0},{"q":"Videoni eksport qilishda 1080p ruxsati nima uchun tavsiya etiladi?","answers":[{"text":"Fayl hajmi juda kichik bo'ladi","correct":false},{"text":"Yuqori sifatli video uchun","correct":true},{"text":"Faqat audio uchun","correct":false},{"text":"Eksport tezligi uchun","correct":false}],"correct":1},{"q":"Xulosaga ko'ra, Clipchamp kimlar uchun mo'ljallangan?","answers":[{"text":"Faqat professional kinorejissyorlar","correct":false},{"text":"Yangi boshlanuvchilar va ilg'or foydalanuvchilar uchun","correct":true},{"text":"Faqat dasturchilar","correct":false},{"text":"Faqat buxgalterlar","correct":false}],"correct":1},{"q":"Photoshop dasturida matn qo'shish uchun qaysi vosita ishlatiladi?","answers":[{"text":"Move Tool","correct":false},{"text":"Brush Tool","correct":false},{"text":"Text Tool (T belgisi)","correct":true},{"text":"Eraser Tool","correct":false}],"correct":2},{"q":"Matn vositasini tanlagandan so'ng, parametrlar panelida qanday sozlamalar ko'rinadi?","answers":[{"text":"Faqat rang","correct":false},{"text":"Shrift turi, o'lchami, tekislash va rang","correct":true},{"text":"Faqat o'lcham","correct":false},{"text":"Faqat qatlam maskasi","correct":false}],"correct":1},{"q":"Matn rangini o'zgartirish uchun nima qilish kerak?","answers":[{"text":"Qatlamni o'chirish","correct":false},{"text":"Rang tanlash vositasidan foydalanish","correct":true},{"text":"Filtr qo'llash","correct":false},{"text":"Kesish vositasi","correct":false}],"correct":1},{"q":"Matnning tuvaldagi o'rnini o'zgartirish uchun qaysi vosita ishlatiladi?","answers":[{"text":"Crop Tool","correct":false},{"text":"Move Tool (V)","correct":true},{"text":"Lasso Tool","correct":false},{"text":"Magic Wand Tool","correct":false}],"correct":1},{"q":"Matn hajmini o'zgartirish yoki aylantirish uchun qanday funksiya ishlatiladi?","answers":[{"text":"Free Transform (Ctrl+T yoki Cmd+T)","correct":true},{"text":"Export","correct":false},{"text":"Layer Mask","correct":false},{"text":"Color Balance","correct":false}],"correct":0},{"q":"Qatlam uslublari (Layer Styles) qayerda joylashgan?","answers":[{"text":"Faqat menyu panelida","correct":false},{"text":"Qatlamlarni o'ng tugmasini bosib yoki FX tugmasi orqali","correct":true},{"text":"Faqat asboblar panelida","correct":false},{"text":"Faqat eksport qilishda","correct":false}],"correct":1},{"q":"Qaysi qatlam uslubi matn orqasiga soya qo'shib, chuqurlik hosil qiladi?","answers":[{"text":"Stroke","correct":false},{"text":"Bevel & Emboss","correct":false},{"text":"Drop Shadow","correct":true},{"text":"Outer Glow","correct":false}],"correct":2},{"q":"Matn atrofiga kontur (chegara) qo'shish uchun qaysi effekt ishlatiladi?","answers":[{"text":"Inner Glow","correct":false},{"text":"Stroke","correct":true},{"text":"Drop Shadow","correct":false},{"text":"Pattern Overlay","correct":false}],"correct":1},{"q":"Bir vaqtning o'zida bir nechta qatlam uslublarini qo'llash mumkinmi?","answers":[{"text":"Yo'q, faqat bitta","correct":false},{"text":"Ha, bir nechtasini belgilash mumkin","correct":true},{"text":"Faqat ikkitasi","correct":false},{"text":"Faqat soya va chiziq","correct":false}],"correct":1},{"q":"Matn shakliga tekstura yoki rasmni chegaralash uchun qandiy usul ishlatiladi?","answers":[{"text":"Free Transform","correct":false},{"text":"Clipping Mask (Qirqim niqobi)","correct":true},{"text":"Layer Mask","correct":false},{"text":"Crop Tool","correct":false}],"correct":1},{"q":"Matnni 3D ob'ektga aylantirish uchun qaysi menyu yo'li ishlatiladi?","answers":[{"text":"Filter > Blur","correct":false},{"text":"3D > Tanlangan qatlamdan yangi 3D ekstruziya","correct":true},{"text":"Image > Adjustments","correct":false},{"text":"Layer > New","correct":false}],"correct":1},{"q":"Matnni fon rasmining konturlari bo'yicha burish uchun qanday usul qo'llaniladi?","answers":[{"text":"Displace (Joy almashish xaritasi)","correct":true},{"text":"Drop Shadow","correct":false},{"text":"Stroke","correct":false},{"text":"Bevel & Emboss","correct":false}],"correct":0},{"q":"Matnni perspektivda (masalan, devorga yozilgandek) ko'rsatish uchun qanday vosita ishlatiladi?","answers":[{"text":"Free Transform > Perspective","correct":true},{"text":"Crop Tool","correct":false},{"text":"Color Balance","correct":false},{"text":"Eraser Tool","correct":false}],"correct":0},{"q":"Neon glow (neon porlash) effekti asosan qaysi qatlam uslubi yordamida yaratiladi?","answers":[{"text":"Drop Shadow","correct":false},{"text":"Pattern Overlay","correct":false},{"text":"Outer Glow","correct":true},{"text":"Stroke","correct":false}],"correct":2},{"q":"Kelajakda tahrirlash uchun qatlamlar va effektlarni saqlab qolish uchun qanday formatda saqlash kerak?","answers":[{"text":"JPEG","correct":false},{"text":"PNG","correct":false},{"text":"PSD (Photoshop)","correct":true},{"text":"BMP","correct":false}],"correct":2},{"q":"Matnli reklamalarni yaratishda qanday asosiy xususiyatlar talab qilinadi?","answers":[{"text":"Faqat audio effektlar","correct":false},{"text":"Estetik joziba, aniqlik va professionallik","correct":true},{"text":"Faqat animatsiya","correct":false},{"text":"Faqat katta fayl hajmi","correct":false}],"correct":1},{"q":"Instagram uchun matnli reklama yaratishda qanday o'lcham tavsiya etiladi?","answers":[{"text":"1920 x 1080 piksel","correct":false},{"text":"1080 x 1080 piksel","correct":true},{"text":"500 x 500 piksel","correct":false},{"text":"800 x 600 piksel","correct":false}],"correct":1},{"q":"Bosma reklamalar uchun ruxsat (DPI) qancha bo'lishi kerak?","answers":[{"text":"72 DPI","correct":false},{"text":"300 DPI","correct":true},{"text":"150 DPI","correct":false},{"text":"96 DPI","correct":false}],"correct":1},{"q":"Qo'llanmalar (guides) va to'r (grid) asosan nima uchun ishlatiladi?","answers":[{"text":"Rang tanlash","correct":false},{"text":"Matn va elementlarni to'g'ri tekislash","correct":true},{"text":"Filtr qo'shish","correct":false},{"text":"Audio yozish","correct":false}],"correct":1},{"q":"Kuchli, diqqatni tortadigan reklamalar uchun qanday shrift turi ko'pincha tavsiya etiladi?","answers":[{"text":"Kichik va ingichka shrift","correct":false},{"text":"Qalin sans-serif shrift (masalan, Impact yoki Helvetica)","correct":true},{"text":"Faqat qo'l yozuvi shriftlari","correct":false},{"text":"Faqat serif shriftlar","correct":false}],"correct":1},{"q":"Qatlam uslublari (Layer Styles) qayerda ochiladi?","answers":[{"text":"Fayl > Yangi","correct":false},{"text":"Matn qatlamini o'ng tugmasini bosib > Blending Options","correct":true},{"text":"Tahrirlash > Kesish","correct":false},{"text":"Ko'rish > Masshtab","correct":false}],"correct":1},{"q":"Drop Shadow (qo'shilgan soya) effekti asosan nima uchun ishlatiladi?","answers":[{"text":"Matn rangini o'zgartirish","correct":false},{"text":"Chuqurlik yaratish va matnni fondan ajratish","correct":true},{"text":"Matnni o'chirish","correct":false},{"text":"Fayl hajmini kamaytirish","correct":false}],"correct":1},{"q":"Stroke (chiziq) effekti qanday vazifani bajaradi?","answers":[{"text":"Matnni xiralashtiradi","correct":false},{"text":"Matn atrofida kontur (chegara) yaratadi","correct":true},{"text":"Rangni to'liq o'zgartiradi","correct":false},{"text":"Matnni aylantiradi","correct":false}],"correct":1},{"q":"Gradient Overlay (gradient qoplamasi) qanday effekt beradi?","answers":[{"text":"Matnni butunlay oq qiladi","correct":false},{"text":"Matnga zamonaviy, rangli o'tish effekti qo'shadi","correct":true},{"text":"Faqat soya qo'shadi","correct":false},{"text":"Faqat qora rang qo'shadi","correct":false}],"correct":1},{"q":"Matnga filtrni buzilmaydigan (tahrir qilish mumkin) tarzda qo'llash uchun nima qilish kerak?","answers":[{"text":"Qatlamni o'chirish","correct":false},{"text":"Matn qatlamini Smart Object (Aqlli ob'ekt) ga aylantirish","correct":true},{"text":"Faylni JPEG sifatida saqlash","correct":false},{"text":"Rang balansini o'zgartirish","correct":false}],"correct":1},{"q":"Qaysi filtr matnga to'lqinsimon, oqimli harakat effekti qo'shadi?","answers":[{"text":"Gaussian Blur","correct":false},{"text":"Wave (Filtr > Distort > Wave)","correct":true},{"text":"Sharpen","correct":false},{"text":"Noise","correct":false}],"correct":1},{"q":"Overlay aralashtirish rejimi (blending mode) nima qiladi?","answers":[{"text":"Matnni butunlay yashiradi","correct":false},{"text":"Matnni fon ranglari va teksturalari bilan uyg'unlashtiradi","correct":true},{"text":"Matnni kattalashtiradi","correct":false},{"text":"Matnni o'chirib tashlaydi","correct":false}],"correct":1},{"q":"Neon glow (yorqin porlash) effekti asosan qaysi qatlam uslubi yordamida yaratiladi?","answers":[{"text":"Inner Shadow","correct":false},{"text":"Outer Glow","correct":true},{"text":"Drop Shadow","correct":false},{"text":"Bevel & Emboss","correct":false}],"correct":1},{"q":"Matnga tekstura (masalan, qog'oz yoki metall ko'rinishi) qo'shish uchun qanday usul ishlatiladi?","answers":[{"text":"Free Transform","correct":false},{"text":"Clipping Mask (Qirqim niqobi)","correct":true},{"text":"Crop Tool","correct":false},{"text":"Move Tool","correct":false}],"correct":1},{"q":"Veb (onlayn) foydalanish uchun matnli reklamani qanday formatda eksport qilish tavsiya etiladi?","answers":[{"text":"PSD","correct":false},{"text":"JPEG yoki PNG","correct":true},{"text":"TIFF","correct":false},{"text":"PDF","correct":false}],"correct":1},{"q":"Photoshop'da filtrlar va qatlam uslublarini o'zlashtirish asosan nima uchun muhim?","answers":[{"text":"Matn yozish uchun","correct":false},{"text":"Ob'ektlarga noyob tekstura, tashqi ko'rinish va chuqurlik berish uchun","correct":true},{"text":"Audio tahrirlash uchun","correct":false},{"text":"Faqat faylni saqlash uchun","correct":false}],"correct":1},{"q":"Vebga asoslangan loyiha uchun qanday hujjat o'lchami tavsiya etiladi?","answers":[{"text":"800 x 600 piksel","correct":false},{"text":"1920 x 1080 piksel","correct":true},{"text":"500 x 500 piksel","correct":false},{"text":"300 x 300 piksel","correct":false}],"correct":1},{"q":"Photoshop'da ob'ektni import qilish uchun qaysi menyu yo'li ishlatiladi?","answers":[{"text":"Fayl > Yangi","correct":false},{"text":"Fayl > O'rnatilgan joylashtirish","correct":true},{"text":"Tahrirlash > Kesish","correct":false},{"text":"Qatlam > Yangi","correct":false}],"correct":1},{"q":"Qatlam uslublari dialog oynasini ochish uchun nima qilish kerak?","answers":[{"text":"Qatlamni ikki marta bosish","correct":false},{"text":"Qatlamni o'ng tugmasini bosib > Blending Options","correct":true},{"text":"Ctrl + Z bosish","correct":false},{"text":"Faylni yopish","correct":false}],"correct":1},{"q":"Drop Shadow (soya) effekti asosan nima uchun ishlatiladi?","answers":[{"text":"Rangni o'zgartirish","correct":false},{"text":"Ob'ektga chuqurlik va fondan ajralish berish","correct":true},{"text":"Matn yozish","correct":false},{"text":"Ob'ektni o'chirish","correct":false}],"correct":1},{"q":"Stroke (chiziq) effekti qanday vazifani bajaradi?","answers":[{"text":"Ob'ektni xiralashtiradi","correct":false},{"text":"Ob'ekt atrofida kontur (chegara) yaratadi","correct":true},{"text":"Rangni gradient qiladi","correct":false},{"text":"Ob'ektni aylantiradi","correct":false}],"correct":1},{"q":"Bevel & Emboss uslubi ob'ektga qanday effekt beradi?","answers":[{"text":"Yassi ko'rinish","correct":false},{"text":"3D effekti (qirralarda yorug'lik va soya)","correct":true},{"text":"Faqat qora rang","correct":false},{"text":"Faqat porlash","correct":false}],"correct":1},{"q":"Gradient Overlay nima qiladi?","answers":[{"text":"Ob'ektga dinamik rang o'tishini beradi","correct":true},{"text":"Ob'ektni kesadi","correct":false},{"text":"Faqat oq rang qo'shadi","correct":false},{"text":"Ob'ektni o'chiradi","correct":false}],"correct":0},{"q":"Filtrlarni qo'llashdan oldin ob'ektni Smart Object'ga aylantirishning asosiy sababi nimada?","answers":[{"text":"Fayl hajmini kichraytirish","correct":false},{"text":"Buzilmaydigan tahrirlash imkoniyatini saqlash","correct":true},{"text":"Rangni o'zgartirish","correct":false},{"text":"Tezroq eksport qilish","correct":false}],"correct":1},{"q":"Gaussian Blur filtri qanday effekt yaratadi?","answers":[{"text":"O'tkirlashtiradi","correct":false},{"text":"Yumshatadi va xiralashtiradi","correct":true},{"text":"To'lqin hosil qiladi","correct":false},{"text":"Rangni to'liq o'zgartiradi","correct":false}],"correct":1}],
+  section2: [{"q":"Yunon yozma adabiyotining bizga qadar yetib kelgan eng qadimgi yozma namunalari...","answers":[{"text":"«Shox, Edip» tragediyasidir","correct":false},{"text":"«Zanjirband Prometey» tragediyasidir","correct":false},{"text":"«Medeya» tragediyasidir","correct":false},{"text":"«Iliada» va «Odisseya» eposlaridir","correct":true}],"correct":3},{"q":"Homer «Iliada» dostonini yozishda voqealar tavsifiga kirishdan oldin ilhom parisiga murojaat qilib, kimning g'azabini kuylashda madad tilaydi?","answers":[{"text":"Odisseyning","correct":false},{"text":"Axillesning","correct":true},{"text":"Gektorning","correct":false},{"text":"Parisning","correct":false}],"correct":1},{"q":"Qadimgi Yunonlar qaysi shaharni \"Ilion\" deb ham ataganlar?","answers":[{"text":"Fiva","correct":false},{"text":"Sparta","correct":false},{"text":"Troya","correct":true},{"text":"Itaka","correct":false}],"correct":2},{"q":"Yunonlarda go'zallik va muhabbat ma'budasi, Troya shahzodasi Parisning homiysi sanalgan ma'budaning ismi nima?","answers":[{"text":"Gera","correct":false},{"text":"Afina","correct":false},{"text":"Artemida","correct":false},{"text":"Afrodita","correct":true}],"correct":3},{"q":"Dramaning paydo bo'lishini qadimgi Yunonlar qaysi ma'budga bog'lashgan?","answers":[{"text":"Zevsga","correct":false},{"text":"Afroditaga","correct":false},{"text":"Afinaga","correct":false},{"text":"Dionisga","correct":true}],"correct":3},{"q":"Quyidagi tragediyalardan qaysi biri Sofokl qalamiga mansub emas?","answers":[{"text":"«Shoh Edip»","correct":false},{"text":"«Antigona»","correct":false},{"text":"«Zanjirband Prometey»","correct":true},{"text":"«Ayaks»","correct":false}],"correct":2},{"q":"Yunon adabiyotining yuksak taraqqiyot bosqichiga ko'tarilgan davri nechanchi asrlarga to'gri keladi?","answers":[{"text":"Mil. avv. VII-VI asrlarga","correct":false},{"text":"Mil. avv. V-VI asrlarga","correct":false},{"text":"Mil. avv. III-I asrlarga","correct":false},{"text":"Mil. avv. V-IV asrlarga","correct":true}],"correct":3},{"q":"Qadimgi Yunonlar va hozirgi ilm ahli kimni tragediyaning otasi sifatida ulug'laydilar?","answers":[{"text":"Esxilni","correct":true},{"text":"Sofoklni","correct":false},{"text":"Yevripidni","correct":false},{"text":"Fespidni","correct":false}],"correct":0},{"q":"«Zanjirband Prometey» fojiasi qahramonlari berilgan qatorni toping","answers":[{"text":"Lay, Medeya, Iokasta","correct":false},{"text":"Edip, Medeya, , Germes","correct":false},{"text":"Medeya, Yason, Okean","correct":false},{"text":"Prometey, Gefest, Germes","correct":true}],"correct":3},{"q":"«Medeya» qahramonlari keltirilgan qatorni toping","answers":[{"text":"Germes, Io, Kreont, Yason","correct":false},{"text":"Yason, Medeya, Kreont, Egey","correct":true},{"text":"Yason, Medeya, Prometey, Io","correct":false},{"text":"Yason, Medeya, Okean","correct":false}],"correct":1},{"q":"Dastlabki Rim shoirlarining nomlari keltirilgan javobni aniqlang","answers":[{"text":"Difil, Filemon, Menandr","correct":false},{"text":"Liviy Andronik, Gney Neviy, Kvint Enniy","correct":true},{"text":"Liviy Androniy, Feokrit, Menandr","correct":false},{"text":"Kallimax, Appoloniy Rodosskiy, Feokrit","correct":false}],"correct":1},{"q":"Yunonlarning Eney haqidagi afsonasini Rimliklar nima uchun rasmiy ravishda qabul qiladilar?","answers":[{"text":"Yunon madaniyatini sevganliklari sababli","correct":false},{"text":"Eney Troya bahodiri bo'lganligi sababli","correct":false},{"text":"Rim xalqining troyaliklardan tarqalganligi uchun","correct":true},{"text":"Eney ma'budlar avlodidan bo'lganligi uchun","correct":false}],"correct":2},{"q":"«Iliada» dostonining bob va misralari to'g'ri ko'rsatilgan qatorni toping?","answers":[{"text":"24 bob, 15700 misradan","correct":false},{"text":"20 bob, 15500 misradan","correct":false},{"text":"22 bob, 16500 misradan","correct":false},{"text":"24 bob, 16000 misradan","correct":true}],"correct":3},{"q":"Yunon–Troya urushining boshlanishiga sabab bo'lgan, go'zal Yelenani olib qochgan Troya shahzodasining ismi nima?","answers":[{"text":"Gektor","correct":false},{"text":"Paris","correct":true},{"text":"Eney","correct":false},{"text":"Priam","correct":false}],"correct":1},{"q":"\"Iliada\" dostonidagi kulminatsion nuqta sanalgan jang kimlar o'rtasida bo'lib o'tadi?","answers":[{"text":"Paris va Menelay jangi","correct":false},{"text":"Gektor va Ayaks jangi","correct":false},{"text":"Patrokl va Gektor jangi","correct":false},{"text":"Axilles va Gektor jangi","correct":true}],"correct":3},{"q":"Troya shahzodasi Gektorga homiylik qilgan ma'budning nomini toping","answers":[{"text":"Apollon","correct":true},{"text":"Zevs","correct":false},{"text":"Afrodita","correct":false},{"text":"Afina","correct":false}],"correct":0},{"q":"Qadimgi Yunonlar ma'budlaridan biri Dionis bilan bog'liq bo'lgan adabiy janr qaysi?","answers":[{"text":"Hikoya","correct":false},{"text":"Roman","correct":false},{"text":"Doston","correct":false},{"text":"Drama","correct":true}],"correct":3},{"q":"Sofokl asarlari ko'rsatilgan qatorni toping?","answers":[{"text":"\"Shoh Edip\"","correct":false},{"text":"Barcha javoblar to'g'ri","correct":true},{"text":"\"Ayaks\"","correct":false},{"text":"\"Elektra\"","correct":false}],"correct":1},{"q":"Tragediyaning ma'nosi...","answers":[{"text":"Drama","correct":false},{"text":"Badiiy asar","correct":false},{"text":"Echki qo'shig'i","correct":true},{"text":"Janr","correct":false}],"correct":2},{"q":"\"Anallar\" (solnomalar) dostoni muallifi, Rim elining ikkinchi Gomeri bo'lishni orzu qilgan shoirning nomini toping.","answers":[{"text":"Liviy Andronik","correct":false},{"text":"Katull","correct":false},{"text":"Gney Neviy","correct":false},{"text":"Kvint Enniy","correct":true}],"correct":3},{"q":"Latin she'riyatini tubdan o'zgartirib, eski saturn vaznini latin gekzametri bilan almashtirgan islohotchi shoir kim?","answers":[{"text":"Gney Neviy","correct":false},{"text":"Kvint Enniy","correct":true},{"text":"Liviy Andronik","correct":false},{"text":"Plavt","correct":false}],"correct":1},{"q":"Plavt komediyalarida deyarli uchramaydigan toifa vakillarini belgilang.","answers":[{"text":"Qo'shmachilar","correct":false},{"text":"Qullar","correct":false},{"text":"Aristokratlar","correct":true},{"text":"Sudxo'rlar","correct":false}],"correct":2},{"q":"Asarlarini asosan plebeylarga moslab yozgan rim shoirining ismi?","answers":[{"text":"Gney Neviy","correct":false},{"text":"Kvint Enniy","correct":false},{"text":"Liviy Andronik","correct":false},{"text":"Plavt","correct":true}],"correct":3},{"q":"Asosan yuqori tabaqa vakillari g'oya va maslaklarini ifodalab asarlar yozgan rimlik shoir nomini aniqlang.","answers":[{"text":"Gney Neviy","correct":false},{"text":"Kvint Enniy","correct":false},{"text":"Liviy Andronik","correct":false},{"text":"Terensiy","correct":true}],"correct":3},{"q":"Plavtning \"Xumcha\" komediyasi qahramonlari berilgan javobni aniqlang.","answers":[{"text":"Pirgopolinik, Artotrog, Filomokasiya","correct":false},{"text":"Evklion, Megador, Fedra","correct":true},{"text":"Likonid, Pirgopolinik, Evklion","correct":false},{"text":"Psevdol, Megador, Finikiya","correct":false}],"correct":1},{"q":"Qadimgi Rim mifologiyasida go'zallik ma'budasi qanday nomlangan?","answers":[{"text":"Venera","correct":true},{"text":"Demosfen","correct":false},{"text":"Appollon","correct":false},{"text":"Mars","correct":false}],"correct":0},{"q":"Qadimgi Rim mifologiyasida ma'budlar ma'budi qanday nomlangan?","answers":[{"text":"Venera","correct":false},{"text":"Yupiter","correct":true},{"text":"Appollon","correct":false},{"text":"Mars","correct":false}],"correct":1},{"q":"Qadimgi Rim mifologiyasida otash ma'budi qanday nomlangan?","answers":[{"text":"Venera","correct":false},{"text":"Yupiter","correct":false},{"text":"Vulkan","correct":true},{"text":"Mars","correct":false}],"correct":2},{"q":"Qadimgi Rim mifologiyasida dengiz ma'budi qanday nomlangan?","answers":[{"text":"Venera","correct":false},{"text":"Yupiter","correct":false},{"text":"Vulkan","correct":false},{"text":"Neptun","correct":true}],"correct":3},{"q":"Qadimgi Rim mifologiyasida qonli urushlar ma'budi qanday nomlangan?","answers":[{"text":"Venera","correct":false},{"text":"Yupiter","correct":false},{"text":"Vulkan","correct":false},{"text":"Mars","correct":true}],"correct":3},{"q":"Dantega shuhrat keltirgan birinchi asari","answers":[{"text":"\"Yangi hayot\" she'rlar to'plami","correct":true},{"text":"\"Ziyofat\"","correct":false},{"text":"\"Nutq\"","correct":false},{"text":"\"Ilohiy komediya\"","correct":false}],"correct":0},{"q":"Dante inson umrini necha faslga bo'ladi?","answers":[{"text":"2","correct":false},{"text":"4","correct":true},{"text":"1","correct":false},{"text":"6","correct":false}],"correct":1},{"q":"Shekspir ijodiga mansub bo'lgan asarni toping?","answers":[{"text":"\"Tirilish\"","correct":false},{"text":"\"Xalq isyoni\"","correct":false},{"text":"\"Ilohiy komediya\"","correct":false},{"text":"\"Qirol Lir\"","correct":true}],"correct":3},{"q":"Goneril, Regan, Kordeliya qaysi asar qahramonlari?","answers":[{"text":"\"Tirilish\"","correct":false},{"text":"\"Xalq isyoni\"","correct":false},{"text":"\"Ilohiy komediya\"","correct":false},{"text":"\"Qirol Lir\"","correct":true}],"correct":3},{"q":"Angliyadagi ilk ma'rifatchilik adabiyotining vakili sifatida birinchilardan bo'lib qaysi ijodkor tilga olinadi?","answers":[{"text":"Dante","correct":false},{"text":"Molyer","correct":false},{"text":"Ezop","correct":false},{"text":"Daniyel Defo","correct":true}],"correct":3},{"q":"Daniyel Defoning mashhur asari?","answers":[{"text":"Odesseya","correct":false},{"text":"Tatryuf","correct":false},{"text":"Masallar","correct":false},{"text":"Robinzon Kruzo","correct":true}],"correct":3},{"q":"Yer yuzidagi ana shu ikki xalq yaratgan madaniyat, san'at va adabiyot antik madaniyat, antik adabiyot deb ataladi. Bular qaysi xalq hisoblanadi?","answers":[{"text":"turk va o'zbek xalqi","correct":false},{"text":"turk va rim xalqi","correct":false},{"text":"yunon xalqi","correct":false},{"text":"yunon va rim xalqi","correct":true}],"correct":3},{"q":"\"Iliada\" va \"Odisseya\" dostonlarining farqi nima?","answers":[{"text":"yunonlarning botirligi \"Odisseya\" dostoni orqali ko'rsatilgan bo'lsa, tarqoqligi \"Illiada\" orqali ko'rsatilgan.","correct":false},{"text":"biri yunon, ikkinchisi rim tarixini ko'rsatadi","correct":false},{"text":"birining muallifi aniq, ikkinchisining muallifi noaniqligi bilan farq qiladi.","correct":false},{"text":"yunonlarning botirligi \"Illiada\" dostoni orqali ko'rsatilgan bo'lsa, donishmandligi \"Odisseya\" orqali ko'rsatilgan.","correct":true}],"correct":3},{"q":"Drama so'zining ma'nosi nima?","answers":[{"text":"Ovoz","correct":false},{"text":"Sahna","correct":false},{"text":"Harakat","correct":true},{"text":"Ijod","correct":false}],"correct":2},{"q":"Yunon madaniyatining oltin davri kimning davriga to'g'ri keladi?","answers":[{"text":"Oktavyan","correct":false},{"text":"Artur","correct":false},{"text":"Perikl","correct":true},{"text":"Aristotel","correct":false}],"correct":2},{"q":"Esxilning qaysi tragediyasi mifologik mavzuda yozilmagan?","answers":[{"text":"\"Eroniylar\"","correct":true},{"text":"\"Oresteya\"","correct":false},{"text":"\"Evmenidlar\"","correct":false},{"text":"\"Iltijogo'ylar\"","correct":false}],"correct":0},{"q":"Sofoklning \"Shoh Edip\" asari kim tomonidan tarjima qilingan?","answers":[{"text":"Ibrohim Yusupov","correct":false},{"text":"Hodi Zarifov","correct":false},{"text":"Mirkarim Osim","correct":false},{"text":"Asqad Muhtor","correct":true}],"correct":3},{"q":"Yevripidning yunon tragediyanavisligiga kiritgan yangiliklarini to'laroq aks ettirgan asari qaysi?","answers":[{"text":"\"Ion\"","correct":false},{"text":"\"Elektra\"","correct":false},{"text":"\"Yelena\"","correct":false},{"text":"\"Medeya\"","correct":true}],"correct":3},{"q":"«Chol va dengiz» asari muallifi kim?","answers":[{"text":"Mark Tven","correct":false},{"text":"Teodor Drayzer","correct":false},{"text":"Jek London","correct":false},{"text":"Ernest Xeminguey","correct":true}],"correct":3},{"q":"Ispaniya uyg'onish davri adabiyotining buyuk namoyandasini belgilang.","answers":[{"text":"Dante","correct":false},{"text":"Mark Tven","correct":false},{"text":"Jek London","correct":false},{"text":"Servantes","correct":true}],"correct":3},{"q":"«Qaroqchilar», «Makr va muhabbat», «Orlean qizi» kabi mashhur tragediyalarning muallifi kim?","answers":[{"text":"Dante","correct":false},{"text":"Jek London","correct":false},{"text":"Gyote","correct":false},{"text":"Shiller","correct":true}],"correct":3},{"q":"«Robinzon Kruzo», «Kapitan Singlton», «Kavalerning memuarlari», «Roksana» kabi asarlar muallifini toping.","answers":[{"text":"Daniel Defo","correct":true},{"text":"Jonatan Svift","correct":false},{"text":"Gyote","correct":false},{"text":"Onore de Balzak","correct":false}],"correct":0},{"q":"Gyotening \"Faust\" tragediyasini o'zbek tiliga tarjima qilgan o'zbek shoiri qaysi?","answers":[{"text":"A.Oripov","correct":false},{"text":"Asqad Muxtor","correct":false},{"text":"Erkin Vohidov","correct":true},{"text":"A.Qahhor","correct":false}],"correct":2},{"q":"Fransuz kahramonlik eposi berilgan qatorni toping.","answers":[{"text":"«Roland haqida qo'shiq»","correct":true},{"text":"«Robin Gud haqida qo'shiq»","correct":false},{"text":"«Sid haqida qo'shiq»","correct":false},{"text":"«Nibelunglar haqida qo'shiq»","correct":false}],"correct":0},{"q":"Ispan xalq qahramonlik eposi berilgan qatorni belgilang.","answers":[{"text":"«Roland haqida qo'shiq»","correct":false},{"text":"«Sid haqida qo'shiq»","correct":true},{"text":"«Nibelunglar haqida qo'shiq»","correct":false},{"text":"«Robin Gud haqida qo'shiq»","correct":false}],"correct":1},{"q":"«Makbet», «Yuliy Sezar» tragediyalarini yozgan adib berilgan qatorni toping.","answers":[{"text":"Shekspir","correct":true},{"text":"Geradot","correct":false},{"text":"Sofokl","correct":false},{"text":"Dante Aligyeri","correct":false}],"correct":0},{"q":"O'ttizta she'rni o'z ichiga olgan «Yangi hayot» to'plami kimning qalamiga mansub?","answers":[{"text":"Shekspir","correct":false},{"text":"Geradot","correct":false},{"text":"Dante","correct":true},{"text":"Gyote","correct":false}],"correct":2},{"q":"Qaysi asar ritsarlik romanlariga parodiya sifatida yaratilgan va insoniyatning eng buyuk kitobi deb tan olingan?","answers":[{"text":"«Don Kixot»","correct":true},{"text":"«Qizil va qora»","correct":false},{"text":"«Gobsek»","correct":false},{"text":"«Gorio ota»","correct":false}],"correct":0},{"q":"«Poetika» asarini yozgan mashhur Yunon faylasufining nomini toping.","answers":[{"text":"Geradot","correct":false},{"text":"Gomer","correct":false},{"text":"Sitsiron","correct":false},{"text":"Aristotel","correct":true}],"correct":3}]
+};
+
+// Shuffle array
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let state = {
+  section: 0,
+  questions: [],
+  current: 0,
+  score: 0,
+  wrong: 0,
+  answered: false
+};
+
+function startQuiz(sectionIdx) {
+  state.section = sectionIdx;
+  const raw = sectionIdx === 0 ? DATA.section1 : DATA.section2;
+  // Shuffle questions
+  state.questions = shuffle(raw).map(q => {
+    // Shuffle answers within each question
+    const shuffled = shuffle(q.answers);
+    const newCorrect = shuffled.findIndex(a => a.correct);
+    return { q: q.q, answers: shuffled, correct: newCorrect };
+  });
+  state.current = 0;
+  state.score = 0;
+  state.wrong = 0;
+  state.answered = false;
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+
+  const titles = ['Bo\'lim 1 — Axborot Texnologiyalari', 'Bo\'lim 2 — Jahon Adabiyoti'];
+  document.getElementById('quizTitleSm').textContent = titles[sectionIdx];
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+  state.answered = false;
+
+  document.getElementById('qCounter').textContent = `Savol ${state.current + 1} / ${total}`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('scoreDisp').textContent = state.score;
+  document.getElementById('progressFill').style.width = `${(state.current / total) * 100}%`;
+
+  const grid = document.getElementById('answersGrid');
+  grid.innerHTML = '';
+
+  q.answers.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.onclick = () => handleAnswer(i, btn);
+
+    const icon = ans.correct ? '✓' : '✗';
+
+    btn.innerHTML = `
+      <div class="ans-letter">${LETTERS[i]}</div>
+      <div class="ans-text">${ans.text}</div>
+      <div class="ans-icon">${ans.correct ? '✓' : '✗'}</div>
+    `;
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('nextBtn').classList.remove('visible');
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function handleAnswer(idx, btn) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.questions[state.current];
+  const allBtns = document.querySelectorAll('.ans-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === q.correct;
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    state.score++;
+    showToast('✓  To\'g\'ri javob!', 'correct-toast');
+    spawnParticles(btn);
+  } else {
+    btn.classList.add('wrong');
+    state.wrong++;
+    showToast('✗  Noto\'g\'ri!', 'wrong-toast');
+    // Show correct
+    allBtns[q.correct].classList.add('show-correct');
+  }
+
+  document.getElementById('scoreDisp').textContent = state.score;
+
+  const nextBtn = document.getElementById('nextBtn');
+  const isLast = state.current === state.questions.length - 1;
+  document.getElementById('nextLabel').textContent = isLast ? '🏁' : '→';
+  nextBtn.style.display = 'flex';
+  nextBtn.classList.add('visible');
+}
+
+function nextQuestion() {
+  state.current++;
+  if (state.current >= state.questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  const result = document.getElementById('result');
+  result.style.display = 'flex';
+
+  const total = state.questions.length;
+  const pct = Math.round((state.score / total) * 100);
+
+  let emoji, title;
+  if (pct >= 90) { emoji = '🏆'; title = 'Ajoyib natija!'; }
+  else if (pct >= 70) { emoji = '🎉'; title = 'Yaxshi!'; }
+  else if (pct >= 50) { emoji = '💪'; title = 'Davom eting!'; }
+  else { emoji = '📚'; title = 'Ko\'proq o\'qing!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultScoreBig').textContent = `${state.score}/${total}`;
+  document.getElementById('resultPct').textContent = `${pct}% to'g'ri`;
+  document.getElementById('rCorrect').textContent = state.score;
+  document.getElementById('rWrong').textContent = state.wrong;
+
+  document.getElementById('retryBtn').onclick = () => startQuiz(state.section);
+
+  if (pct >= 70) launchConfetti();
+}
+
+function goHome() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+}
+
+// Toast
+let toastTimer;
+function showToast(msg, cls) {
+  const t = document.getElementById('feedbackToast');
+  t.textContent = msg;
+  t.className = `feedback-toast ${cls} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+}
+
+// Particles on correct answer
+function spawnParticles(btn) {
+  const rect = btn.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const colors = ['#00c471','#6c63ff','#ffd700','#00e5ff','#ff6b6b'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (i / 12) * 360;
+    const dist = 40 + Math.random() * 60;
+    const tx = Math.cos(angle * Math.PI / 180) * dist;
+    const ty = Math.sin(angle * Math.PI / 180) * dist;
+    p.style.cssText = `left:${cx}px;top:${cy}px;background:${colors[i%colors.length]};--tx:${tx}px;--ty:${ty}px;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 700);
+  }
+}
+
+// Confetti
+function launchConfetti() {
+  const colors = ['#6c63ff','#00e5ff','#ffd700','#ff6b6b','#00c471','#ff9f43'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `
+        left:${Math.random()*100}vw;
+        top:-10px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${2+Math.random()*2}s;
+        animation-delay:${Math.random()*0.5}s;
+        transform:rotate(${Math.random()*360}deg);
+        width:${6+Math.random()*6}px;
+        height:${6+Math.random()*6}px;
+      `;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  if (document.getElementById('quiz').style.display === 'none') return;
+  const keys = { 'a':0,'b':1,'c':2,'d':3,'1':0,'2':1,'3':2,'4':3 };
+  const idx = keys[e.key.toLowerCase()];
+  if (idx !== undefined && !state.answered) {
+    const btns = document.querySelectorAll('.ans-btn');
+    if (btns[idx]) handleAnswer(idx, btns[idx]);
+  }
+  if ((e.key === 'Enter' || e.key === 'ArrowRight') && state.answered) {
+    nextQuestion();
+  }
+});
+</script>
+</body>
+</html>
